@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NoteMVVM</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_note">Notes</string>
+    <string name="tv_title_note">Work</string>
+    <string name="tv_date_note">12 September 2021</string>
+    <string name="tv_dsb_app">Record your Daily Activity</string>
+</resources>
