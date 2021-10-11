@@ -4,17 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.view.View" />
-
         <variable
-            name="model"
-            type="com.example.notemvvm.model.Note" />
-
-        <variable
-            name="callback"
-            type="com.example.notemvvm.view.MainActivity" />
-
+            name="viewModel"
+            type="com.example.notemvvm.viewmodel.MainViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -36,10 +28,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_title"
-                android:text="@={model.title}"
+                android:text="@={viewModel.note.title}"
                 android:textColor="@color/black"
                 android:textColorHint="@color/light_grey"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_dsc_add"
@@ -48,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_note"
                 android:inputType="textMultiLine"
-                android:text="@={model.description}"
+                android:text="@={viewModel.note.description}"
                 android:textColor="@color/black"
                 android:textColorHint="@color/light_grey"
                 android:textSize="16sp" />
@@ -66,21 +59,11 @@
                     android:layout_marginRight="4dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/save"
+                    android:text="@{viewModel.editMode ? @string/update : @string/save}"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
-
-                <Button
-                    android:id="@+id/btn_cancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/cancel"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-
+                    android:textSize="14sp"
+                    android:onClick="@{() -> viewModel.processData()}"
+                    tools:text="@string/save"/>
             </LinearLayout>
 
         </LinearLayout>

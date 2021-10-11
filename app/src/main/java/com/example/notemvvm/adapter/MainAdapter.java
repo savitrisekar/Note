@@ -61,15 +61,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
     @Override
     public int getItemCount() {
-//        if (noteList == null || noteList.size() == 0) {
-//            return 0;
-//        } else {
-//            return noteList.size();
-//        }
-        if (noteList != null)
+        if (noteList == null || noteList.size() == 0) {
+            return 0;
+        } else {
             return noteList.size();
-        else return 0;
-
+        }
     }
 
     public class MainViewHolder extends RecyclerView.ViewHolder {

@@ -1,27 +1,20 @@
 package com.example.notemvvm.view;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.notemvvm.R;
 import com.example.notemvvm.adapter.MainAdapter;
-import com.example.notemvvm.databinding.ActivityMainBinding;
 import com.example.notemvvm.databinding.ActivityAddDialogBinding;
+import com.example.notemvvm.databinding.ActivityMainBinding;
 import com.example.notemvvm.db.NoteDatabase;
 import com.example.notemvvm.model.Note;
 import com.example.notemvvm.viewmodel.MainViewModel;
@@ -35,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.Handl
     ActivityAddDialogBinding addDialogBinding;
     private MainViewModel viewModel;
     private MainAdapter mainAdapter;
-    private Note noteEdit;
+    private AlertDialog addDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +38,14 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.Handl
         setContentView(view);
 
         getSupportActionBar().hide();
+        addDialog = new AlertDialog.Builder(this).create();
+        addDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.activity_add_dialog, null, false);
+        addDialog.setView(addDialogBinding.getRoot());
 
-        mainBinding.fabAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mainBinding.fabAddNote.setOnClickListener(view1 -> {
 //                startActivity(new Intent(MainActivity.this, AddActivity.class));
-                showNote(false);
-            }
+            viewModel.setNote(new Note());
+            addDialog.show();
         });
 
         initViewModel();
@@ -59,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.Handl
     }
 
     private void initRecycler() {
-        mainBinding.rvItemNote.setLayoutManager(new LinearLayoutManager(this));
         mainAdapter = new MainAdapter(this, this);
+        mainBinding.rvItemNote.setLayoutManager(new LinearLayoutManager(this));
         mainBinding.rvItemNote.setAdapter(mainAdapter);
     }
 
@@ -80,70 +74,19 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.Handl
                 }
             }
         });
-    }
 
-    private void showNote(boolean isEdited) {
-        AlertDialog dialog = new AlertDialog.Builder(this).create();
-//        addDialogBinding = ActivityAddDialogBinding.inflate(getLayoutInflater());
-        addDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(dialog.getContext()),
-                R.layout.activity_add_dialog, null, false);
-        View view = addDialogBinding.getRoot();
-
-        if (isEdited) {
-            addDialogBinding.btnSave.setText("Update");
-            addDialogBinding.edtTitleAdd.setText(noteEdit.title);
-            addDialogBinding.edtDscAdd.setText(noteEdit.description);
-        }
-
-        addDialogBinding.btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        addDialogBinding.btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String title = addDialogBinding.edtTitleAdd.getText().toString();
-                String describe = addDialogBinding.edtDscAdd.getText().toString();
-
-                if (TextUtils.isEmpty(title) || TextUtils.isEmpty(describe)) {
-                    Toast.makeText(MainActivity.this, "Please fill your note", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (isEdited) {
-                    noteEdit.title = title;
-                    noteEdit.description = describe;
-                    //update viewModel
-                    viewModel.updateNote(noteEdit);
-                } else {
-                    //insert viewModel
-                    viewModel.insertNote(title, describe);
-                }
-                dialog.dismiss();
-            }
-        });
-        dialog.setView(view);
-        dialog.show();
+        addDialogBinding.setViewModel(viewModel);
     }
 
     @Override
     public void editClick(Note note) {
-        this.noteEdit = note;
-        showNote(true);
+        viewModel.setNote(note);
+        addDialog.show();
     }
 
     @Override
     public void removeClick(Note note) {
         viewModel.deleteNote(note);
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        showNote(false);
     }
 
     @Override
